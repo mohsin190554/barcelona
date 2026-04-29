@@ -1600,6 +1600,7 @@ footer {
     <li><a href="about.html">About</a></li>
     <li><a href="fleet.html">Fleet</a></li>
     <li><a href="services.html">Services</a></li>
+    <li><a href="/#coverage">Coverage</a></li>
     <li><a href="faq.html">FAQ</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
@@ -3009,6 +3010,7 @@ nav.scrolled { padding: 0 4rem !important; }
           <li><a href="about.html">About Us</a></li>
           <li><a href="fleet.html">Our Fleet</a></li>
           <li><a href="services.html">Services</a></li>
+          <li><a href="/#booking">Book Now</a></li>
           <li><a href="faq.html">FAQs</a></li>
         </ul>
       </div>
@@ -3273,9 +3275,35 @@ document.getElementById('b_date').value = today
   // Wait for DOM + Stripe to be ready
   var stripeObj, cardElement;
 
+
+  function showFallbackButton() {
+    var wrap = document.getElementById('stripe-btn-wrap-inner');
+    if (!wrap) return;
+    
+    wrap.innerHTML = '';
+    var payBtn = document.createElement('button');
+    payBtn.id = 'stripe-pay-btn';
+    payBtn.type = 'button';
+    payBtn.textContent = 'Pay Securely →';
+    payBtn.style.cssText = 'width:100%;background:#22c55e;color:#fff;border:none;padding:.9rem 1.5rem;font-size:.85rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .3s;margin-top:1rem;';
+    payBtn.onmouseover = function(){ this.style.background='#16a34a'; };
+    payBtn.onmouseout  = function(){ this.style.background='#22c55e'; };
+    payBtn.onclick = handlePayment;
+    wrap.appendChild(payBtn);
+    console.log('✅ Fallback button created');
+  }
+
   function initStripe() {
+    console.log('🔄 Initializing Stripe...');
     try {
+      if (!window.Stripe) {
+        console.error('❌ Stripe.js not loaded');
+        showFallbackButton();
+        return;
+      }
+      
       stripeObj = Stripe(STRIPE_PK);
+      console.log('✅ Stripe object created');
       var elements = stripeObj.elements();
       cardElement = elements.create('card', {
         style: {
@@ -3291,6 +3319,8 @@ document.getElementById('b_date').value = today
         hidePostalCode: true
       });
       cardElement.mount('#stripe-card-element');
+      console.log('✅ Card element mounted');
+      
       cardElement.on('change', function(e) {
         var errEl = document.getElementById('stripe-card-errors');
         errEl.textContent = e.error ? e.error.message : '';
@@ -3390,6 +3420,15 @@ document.getElementById('b_date').value = today
   } else {
     initStripe();
   }
+  
+  // Safety timeout - force button after 3 seconds if still loading
+  setTimeout(function() {
+    var loadingBtn = document.getElementById('stripe-pay-btn-loading');
+    if (loadingBtn) {
+      console.log('⚠️ Stripe took too long, forcing button');
+      showFallbackButton();
+    }
+  }, 3000);
 })();
 </script>
 
