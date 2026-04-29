@@ -3298,7 +3298,7 @@ document.getElementById('b_date').value = today
     try {
       if (!window.Stripe) {
         console.error('❌ Stripe.js not loaded');
-        showFallbackButton();
+        showFallbackButton(); return;
         return;
       }
       
@@ -3352,7 +3352,6 @@ document.getElementById('b_date').value = today
         wrap.appendChild(payBtn);
         var cardParent = document.getElementById('stripe-card-element').parentNode;
         cardParent.parentNode.insertBefore(wrap, cardParent.nextSibling);
-      }
     } catch(e) {
       console.error('Stripe init error:', e);
       var container = document.getElementById('stripe-card-element');
@@ -3426,7 +3425,7 @@ document.getElementById('b_date').value = today
     var loadingBtn = document.getElementById('stripe-pay-btn-loading');
     if (loadingBtn) {
       console.log('⚠️ Stripe took too long, forcing button');
-      showFallbackButton();
+      showFallbackButton(); return;
     }
   }, 3000);
 })();
