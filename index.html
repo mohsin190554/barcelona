@@ -1600,7 +1600,6 @@ footer {
     <li><a href="about.html">About</a></li>
     <li><a href="fleet.html">Fleet</a></li>
     <li><a href="services.html">Services</a></li>
-    <li><a href="/#coverage">Coverage</a></li>
     <li><a href="faq.html">FAQ</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
@@ -2608,7 +2607,12 @@ nav.scrolled { padding: 0 4rem !important; }
                 <div id="stripe-card-errors" style="color:#ef4444;font-size:.78rem;margin-top:.4rem;min-height:1.2rem;"></div>
               </div>
               <!-- Pay button injected by Stripe JS — shown after card mounts -->
-              <div id="stripe-btn-wrap-inner"></div>
+              <div id="stripe-btn-wrap-inner">
+                <!-- Pay button will appear here after Stripe loads -->
+                <button type="button" id="stripe-pay-btn-loading" style="width:100%;background:#e5e7eb;color:#999;border:none;padding:.9rem 1.5rem;font-size:.85rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-radius:2px;margin-top:1rem;cursor:not-allowed;">
+                  Loading payment...
+                </button>
+              </div>
             </div>
 
             <p class="stripe-note">
@@ -3005,7 +3009,6 @@ nav.scrolled { padding: 0 4rem !important; }
           <li><a href="about.html">About Us</a></li>
           <li><a href="fleet.html">Our Fleet</a></li>
           <li><a href="services.html">Services</a></li>
-          <li><a href="/#booking">Book Now</a></li>
           <li><a href="faq.html">FAQs</a></li>
         </ul>
       </div>
@@ -3295,11 +3298,20 @@ document.getElementById('b_date').value = today
 
       // Replace static pay button with real Stripe pay button
       var wrap = document.getElementById('stripe-btn-wrap-inner');
+      // Remove loading placeholder
+      var loadingBtn = document.getElementById('stripe-pay-btn-loading');
+      if (loadingBtn) loadingBtn.remove();
+      
       if (!wrap) {
         wrap = document.createElement('div');
         wrap.id = 'stripe-btn-wrap-inner';
         wrap.style.cssText = 'margin-top:1rem;';
-        var payBtn = document.createElement('button');
+      }
+      
+      // Clear any existing content
+      wrap.innerHTML = '';
+      
+      var payBtn = document.createElement('button');
         payBtn.id = 'stripe-pay-btn';
         payBtn.type = 'button';
         payBtn.textContent = 'Pay Securely →';
